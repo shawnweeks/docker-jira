@@ -1,0 +1,27 @@
+version: "3"
+volumes:
+  postgresVolume:
+  jiraVolume:
+services:
+  postgres:
+    image: postgres:latest
+    container_name: pg
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgresVolume:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+  jira:
+    image: atlassian/jira-software:latest
+    container_name: jira
+    ports: 
+      - "8080:8080"
+    environment: 
+      - ATL_JDBC_URL=jdbc:postgresql://pg:5432/jira
+      - ATL_JDBC_USER=jira
+      - ATL_JDBC_PASSWORD=jira
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_DB_TYPE=postgres72
+    volumes:
+      - jiraVolume:/var/atlassian/application-data/jira
